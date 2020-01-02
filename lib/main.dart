@@ -1,24 +1,18 @@
+import 'package:brew_crew/models/user.dart';
+import 'package:brew_crew/screens/wrapper.dart';
+import 'package:brew_crew/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MaterialApp(
-  home: Home(),
-  theme: ThemeData(
-    primarySwatch: Colors.green,
-  ),
-));
+void main() => runApp(MyApp());
 
-class Home extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Flutter Brew Crew",
-          style: TextStyle( 
-            letterSpacing: 1,
-          )
-          ),
-        centerTitle: true,
+    return StreamProvider<User>.value(
+      value: AuthService().user,
+          child: MaterialApp(
+        home: Wrapper(),
       ),
     );
   }
