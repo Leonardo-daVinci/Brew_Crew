@@ -1,4 +1,5 @@
 import 'package:brew_crew/services/auth.dart';
+import 'package:brew_crew/shared/constants.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -13,10 +14,13 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
 
   final AuthService _authService = AuthService();
+   final _formKey = GlobalKey<FormState>();
 
   //textfields state
   String email ='';
   String password ='';
+  String error ='';
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +44,21 @@ class _SignInState extends State<SignIn> {
       body: Container(
         padding:EdgeInsets.symmetric(vertical: 20, horizontal: 50),
         child: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               SizedBox(height: 20,),
               TextFormField(
+                decoration: TextInputDecoration.copyWith(hintText: 'Email'),
+                validator: (val) => val.isEmpty? 'Enter email address' :null,
                 onChanged: (val){
                    setState(() => email = val);
                 },
               ),
               SizedBox(height: 20,),
               TextFormField(
+                decoration: TextInputDecoration.copyWith(hintText: 'Password'),
+                validator: (val) => val.length<6 ? 'Password must be at least 6 characters' :null,
                 obscureText: true,
                 onChanged: (val){
                   setState(() => password = val);
@@ -58,8 +67,13 @@ class _SignInState extends State<SignIn> {
               SizedBox(height: 20,),
               RaisedButton(
                 onPressed: () async{
-                  print(email);
-                  print(password);
+                  if(_formKey.currentState.validate()){
+                    dynamic result = await _authService
+                    .signinWithEmailAndPassword(email, password);
+                    if(result== null){
+                      setState(() =>error = 'Cannot sign in! ');
+                    }
+                  }
                 },
                 color:Colors.brown[500],
                 child: Text(
@@ -68,8 +82,15 @@ class _SignInState extends State<SignIn> {
                     color: Colors.white,
                   ),
                   ),
-
-              )
+              ),
+               SizedBox(height: 20,),
+              Text(
+                error,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 14,
+                )
+              ),
         ],
         ),
         )
